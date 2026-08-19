@@ -1,0 +1,162 @@
+#yt-floating-bar {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.yt-dl-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #cc0000;
+  color: #ffffff;
+  border: none;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: background 0.15s ease;
+}
+
+.yt-dl-btn:hover { background: #ff1a1a; }
+
+.yt-dl-menu {
+  display: none;
+  position: absolute;
+  top: 38px;
+  right: 0;
+  background: #181818;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  min-width: 170px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.yt-dl-menu.show { display: flex; flex-direction: column; }
+
+.yt-dl-path-info {
+  padding: 6px 10px;
+  font-size: 10px;
+  color: #888888;
+  background: #111111;
+  border-bottom: 1px solid #282828;
+}
+
+.yt-dl-item {
+  padding: 9px 12px;
+  color: #eeeeee;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.yt-dl-item:hover { background: #2a2a2a; }
+
+.yt-dl-status { padding: 10px 12px; font-size: 11px; color: #aaaaaa; }
+.yt-dl-status.error { color: #ff5555; }
+
+/* --- IDM-Style Floating Card on YouTube --- */
+#yt-idm-card {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 320px;
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #383838;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  padding: 14px 16px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: idmSlideUp 0.25s ease-out;
+}
+
+@keyframes idmSlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.idm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.idm-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.idm-close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.idm-close-btn:hover { color: #fff; background: #333; }
+
+.idm-status-text {
+  font-size: 11px;
+  color: #065fd4;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.idm-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.idm-bar {
+  height: 100%;
+  background: #cc0000;
+  transition: width 0.3s ease;
+}
+
+.idm-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #aaa;
+}
+
+.idm-folder-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px 0;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.idm-folder-btn:hover { background: #383838; }
+
+@keyframes idmStripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 28px 0; }
+}

@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# PyInstaller & Build Outputs
+backend/build/
+backend/dist/
+dist_installer/
+*.spec
+
+# Local Binaries & Runtime Dependencies (Downloaded automatically)
+backend/dist/YTService/yt-dlp.exe
+backend/dist/YTService/deno.exe
+backend/dist/YTService/ffmpeg.exe
+backend/dist/YTService/ffprobe.exe
+yt-dlp.exe
+deno.exe
+
+# User Data, Logs, and Local Configs
+*.log
+cookies.txt
+config.json
+service_console.log
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
