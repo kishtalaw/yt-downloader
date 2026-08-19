@@ -161,7 +161,9 @@ def get_formats(url: str = Query(...)):
     cmd = [
         str(YTDLP_PATH), "-J", "--no-playlist", 
         "--rm-cache-dir", 
+        "--force-ipv4",
         "--js-runtimes", f"deno:{str(DENO_PATH)}",
+        "--extractor-args", "youtube:player_client=web_embedded",
         "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
         clean_url
     ]
@@ -179,20 +181,35 @@ def get_formats(url: str = Query(...)):
         logging.exception("yt-dlp returned invalid format JSON for %s", clean_url)
         raise HTTPException(status_code=502, detail="yt-dlp returned an invalid response. Try again shortly.") from exc
 
-    available_formats = []
-    seen_resolutions = set()
+    selected_by_height = {}
+    codec_rank = {"avc": 4, "h264": 4, "vp9": 3, "av01": 2}
 
     for f in data.get("formats", []):
         height = f.get("height")
         vcodec = f.get("vcodec", "none")
-        if height and vcodec != "none" and height not in seen_resolutions and f.get("ext") == "mp4":
-            seen_resolutions.add(height)
-            available_formats.append({
-                "format_id": f"{f['format_id']}+bestaudio[ext=m4a]/{f['format_id']}+bestaudio/{f['format_id']}",
-                "label": f"{height}p (MP4)",
-                "ext": "mp4",
-                "height": height
-            })
+        ext = f.get("ext")
+        if not height or vcodec == "none" or f.get("has_drm") or ext not in {"mp4", "webm"}:
+            continue
+
+        codec_score = next((score for prefix, score in codec_rank.items() if vcodec.lower().startswith(prefix)), 0)
+        # Prefer MP4 where a resolution offers it, but keep WebM-only 4K/8K
+        # formats available instead of silently hiding them.
+        score = (100 if ext == "mp4" else 0) + codec_score * 10 + (f.get("fps") or 0)
+        current = selected_by_height.get(height)
+        if current is None or score > current[0]:
+            selected_by_height[height] = (score, f)
+
+    available_formats = []
+    for height, (_, f) in selected_by_height.items():
+        ext = f["ext"]
+        audio_ext = "m4a" if ext == "mp4" else "webm"
+        quality_label = f"{height}p / {height // 540}K" if height >= 2160 else f"{height}p"
+        available_formats.append({
+            "format_id": f"{f['format_id']}+bestaudio[ext={audio_ext}]/{f['format_id']}+bestaudio/{f['format_id']}",
+            "label": f"{quality_label} ({ext.upper()})",
+            "ext": ext,
+            "height": height,
+        })
 
     available_formats.sort(key=lambda x: x["height"], reverse=True)
     available_formats.append({"format_id": "bestaudio", "label": "Audio Only (MP3)", "ext": "mp3", "height": 0})
@@ -270,7 +287,11 @@ def _run_download_process(task_id: str, cmd: list):
         return
 
 @app.get("/start-task")
-def trigger_download(url: str = Query(...), format_id: str = Query(...)):
+def trigger_download(
+    url: str = Query(...),
+    format_id: str = Query(...),
+    container: str = Query("mp4"),
+):
     clean_url = normalise_youtube_url(url)
     dest_folder = get_download_path()
     dest_folder.mkdir(parents=True, exist_ok=True)
@@ -284,6 +305,8 @@ def trigger_download(url: str = Query(...), format_id: str = Query(...)):
     # yt-dlp's ``video+bestaudio/fallback`` selector syntax.
     if not re.fullmatch(r"[A-Za-z0-9._+\-/=\[\]<>*,:]+", format_id):
         raise HTTPException(status_code=400, detail="Invalid download format.")
+    if container not in {"mp4", "webm", "mp3"}:
+        raise HTTPException(status_code=400, detail="Invalid output container.")
 
     cmd = [
         str(YTDLP_PATH),
@@ -306,7 +329,7 @@ def trigger_download(url: str = Query(...), format_id: str = Query(...)):
     if is_audio:
         cmd.extend(["--extract-audio", "--audio-format", "mp3"])
     else:
-        cmd.extend(["--merge-output-format", "mp4"])
+        cmd.extend(["--merge-output-format", container])
 
     DOWNLOAD_TASKS[task_id] = {
         "status": "starting",

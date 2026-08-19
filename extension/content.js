@@ -138,7 +138,7 @@ function injectFloatingButton() {
           item.onclick = async () => {
             try {
               menu.classList.remove("show");
-              const dlRes = await fetch(`${BACKEND}/start-task?url=${encodeURIComponent(videoUrl)}&format_id=${encodeURIComponent(fmt.format_id)}`);
+              const dlRes = await fetch(`${BACKEND}/start-task?url=${encodeURIComponent(videoUrl)}&format_id=${encodeURIComponent(fmt.format_id)}&container=${encodeURIComponent(fmt.ext)}`);
               const dlData = await dlRes.json();
               if (!dlRes.ok) throw new Error(dlData.detail || "Could not start the download.");
 
