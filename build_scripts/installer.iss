@@ -22,4 +22,3 @@ Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{app}\YTService.exe"; Flags: nowait postinstall runasoriginaluser
-Filename: "chrome://extensions/"; Flags: shellexec runasoriginaluser postinstall nowait
