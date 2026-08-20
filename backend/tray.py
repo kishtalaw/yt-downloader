@@ -21,6 +21,7 @@ import pystray
 from PIL import Image, ImageDraw
 import uvicorn
 import server
+import updater
 
 def create_tray_icon():
     img = Image.new('RGB', (64, 64), color=(20, 20, 20))
@@ -60,7 +61,17 @@ def run_api_server():
     print("Starting Uvicorn Server on http://127.0.0.1:8000 ...") # Safely logs to service_console.log
     uvicorn.run(server.app, host="127.0.0.1", port=8000, log_level="info")
 
+def run_auto_updater():
+    try:
+        print("Checking for app updates...")
+        updater.check_for_update_and_install()
+    except Exception as e:
+        print(f"Auto-updater failed: {e}")
+
 if __name__ == "__main__":
+    updater_thread = threading.Thread(target=run_auto_updater, daemon=True)
+    updater_thread.start()
+
     server_thread = threading.Thread(target=run_api_server, daemon=True)
     server_thread.start()
 
