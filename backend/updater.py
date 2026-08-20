@@ -50,7 +50,8 @@ def _is_newer(local: str, remote: str) -> bool:
 
 def _http_get_json(url: str):
     req = urllib.request.Request(url, headers={"User-Agent": "YTDownloader-Updater"})
-    with urllib.request.urlopen(req, timeout=20) as r:
+    # Fail fast (5s) so the app doesn't hang on startup if offline
+    with urllib.request.urlopen(req, timeout=5) as r:
         return json.load(r)
 
 

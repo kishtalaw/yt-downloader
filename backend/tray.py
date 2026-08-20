@@ -17,6 +17,7 @@ sys.stderr = log_stream
 # Import UI and Server components AFTER fixing the output stream
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 import pystray
 from PIL import Image, ImageDraw
 import uvicorn
@@ -53,6 +54,30 @@ def choose_download_folder(icon, item):
 def manual_update_ytdlp(icon, item):
     threading.Thread(target=server.ensure_and_update_ytdlp, daemon=True).start()
 
+def _tk_check_app_update():
+    """Runs the update check from a Tkinter dialog thread."""
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes("-topmost", True)
+
+    current_version = updater._read_local_version()
+    msg = f"YT Downloader\nCurrent Version: {current_version}\n\nWould you like to check for app updates?"
+
+    if messagebox.askyesno("About / Update", msg, parent=root):
+        # We need to temporarily increase the timeout for manual checks since the user is waiting
+        print("Checking for app updates manually...")
+        if updater.check_for_update_and_install():
+            messagebox.showinfo("Updating", "An update was found and is being installed. The application will now close.", parent=root)
+            root.destroy()
+            os._exit(0)
+        else:
+            messagebox.showinfo("Update", "You are already on the latest version, or no update could be found.", parent=root)
+
+    root.destroy()
+
+def check_app_update(icon, item):
+    threading.Thread(target=_tk_check_app_update, daemon=True).start()
+
 def quit_app(icon, item):
     icon.stop()
     os._exit(0)
@@ -61,16 +86,17 @@ def run_api_server():
     print("Starting Uvicorn Server on http://127.0.0.1:8000 ...") # Safely logs to service_console.log
     uvicorn.run(server.app, host="127.0.0.1", port=8000, log_level="info")
 
-def run_auto_updater():
+if __name__ == "__main__":
+    # Check for app updates BEFORE starting the server or tray icon.
+    # If an update is launched, exit immediately to release file locks
+    # so the silent installer can overwrite the executable.
     try:
         print("Checking for app updates...")
-        updater.check_for_update_and_install()
+        if updater.check_for_update_and_install():
+            print("Update installer launched. Exiting current process.")
+            sys.exit(0)
     except Exception as e:
         print(f"Auto-updater failed: {e}")
-
-if __name__ == "__main__":
-    updater_thread = threading.Thread(target=run_auto_updater, daemon=True)
-    updater_thread.start()
 
     server_thread = threading.Thread(target=run_api_server, daemon=True)
     server_thread.start()
@@ -79,6 +105,8 @@ if __name__ == "__main__":
         pystray.MenuItem("Select Download Folder", choose_download_folder),
         pystray.MenuItem("Open Downloads Folder", open_download_folder),
         pystray.MenuItem("Update yt-dlp Engine", manual_update_ytdlp),
+        pystray.Menu.SEPARATOR,
+        pystray.MenuItem("About / Update App", check_app_update),
         pystray.Menu.SEPARATOR,
         pystray.MenuItem("Exit", quit_app)
     )
