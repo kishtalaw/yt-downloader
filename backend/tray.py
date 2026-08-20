@@ -90,13 +90,18 @@ if __name__ == "__main__":
     # Check for app updates BEFORE starting the server or tray icon.
     # If an update is launched, exit immediately to release file locks
     # so the silent installer can overwrite the executable.
-    try:
-        print("Checking for app updates...")
-        if updater.check_for_update_and_install():
-            print("Update installer launched. Exiting current process.")
-            sys.exit(0)
-    except Exception as e:
-        print(f"Auto-updater failed: {e}")
+    skip_update = "--skip-update-check" in sys.argv
+
+    if not skip_update:
+        try:
+            print("Checking for app updates on startup...")
+            if updater.check_for_update_and_install():
+                print("Update installer launched. Exiting current process.")
+                sys.exit(0)
+        except Exception as e:
+            print(f"Auto-updater failed: {e}")
+    else:
+        print("Skipping startup update check due to command line flag.")
 
     server_thread = threading.Thread(target=run_api_server, daemon=True)
     server_thread.start()

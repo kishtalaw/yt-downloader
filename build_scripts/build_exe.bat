@@ -17,5 +17,8 @@ pyinstaller --noconfirm --onedir --windowed ^
   --hidden-import="uvicorn.lifespan.off" ^
   --name "YTService" tray.py
 
+:: Explicitly copy the VERSION file to the dist folder to guarantee it is included
+copy /Y VERSION "dist\YTService\VERSION"
+
 echo Done. Please place ffmpeg.exe and ffprobe.exe in backend\dist\YTService\
 pause

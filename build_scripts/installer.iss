@@ -21,4 +21,4 @@ Name: "{group}\YT Downloader"; Filename: "{app}\YTService.exe"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "{app}\YTService.exe"; Flags: nowait postinstall runasoriginaluser
+Filename: "{app}\YTService.exe"; Parameters: "--skip-update-check"; Flags: nowait postinstall runasoriginaluser
