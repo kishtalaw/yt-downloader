@@ -1,13 +1,13 @@
 [Setup]
 AppName=YouTube Floating Downloader
 AppVersion=1.0
-DefaultDirName={autopf}\YTDownloader
+DefaultDirName={localappdata}\YTDownloader
 DefaultGroupName=YT Downloader
 OutputDir=..\dist_installer
 OutputBaseFilename=YTDownloader_Setup
 Compression=lzma
 SolidCompression=yes
-PrivilegesRequired=admin
+PrivilegesRequired=lowest
 
 [Files]
 Source: "..\backend\dist\YTService\*"; DestDir: "{app}"; Flags: recursesubdirs
