@@ -7,6 +7,7 @@ cd /d "%~dp0\..\backend"
 pip install -r requirements.txt
 
 pyinstaller --noconfirm --onedir --windowed ^
+  --add-data "VERSION;." ^
   --hidden-import="uvicorn.logging" ^
   --hidden-import="uvicorn.loops" ^
   --hidden-import="uvicorn.loops.auto" ^
