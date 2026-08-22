@@ -24,7 +24,10 @@ GITHUB_API_RELEASES_LATEST = "https://api.github.com/repos/{owner}/{repo}/releas
 
 
 def _read_local_version() -> str:
-    vfile = APP_DIR / "VERSION"
+    if getattr(sys, 'frozen', False):
+        vfile = Path(sys.executable).resolve().parent / "VERSION"
+    else:
+        vfile = APP_DIR / "VERSION"
     try:
         return vfile.read_text(encoding='utf-8').strip()
     except Exception:

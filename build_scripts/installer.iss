@@ -1,7 +1,7 @@
 [Setup]
 AppName=YouTube Floating Downloader
-AppVersion=1.0.5
-VersionInfoVersion=1.0.5.0
+AppVersion=1.0.6
+VersionInfoVersion=1.0.6.0
 DefaultDirName={localappdata}\YTDownloader
 DefaultGroupName=YT Downloader
 OutputDir=..\dist_installer

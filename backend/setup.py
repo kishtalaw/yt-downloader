@@ -22,7 +22,7 @@ base = "Win32GUI" if sys.platform == "win32" else None
 
 setup(
     name="YTService",
-    version="1.0.5",
+    version="1.0.6",
     description="YT Downloader Service",
     options={"build_exe": build_exe_options},
     executables=[Executable("tray.py", base=base, target_name="YTService.exe")]
