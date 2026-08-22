@@ -2,5 +2,5 @@ fastapi>=0.100.0
 uvicorn>=0.22.0
 pystray>=0.19.4
 Pillow>=10.0.0
-pyinstaller>=5.13.0
+cx_Freeze>=7.2.0
 browser-cookie3>=0.19.1
